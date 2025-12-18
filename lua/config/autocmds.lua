@@ -91,29 +91,8 @@ autocmd("VimResized", {
   desc = "Resize splits when window is resized",
 })
 
--- Set relative number in normal mode, absolute in insert mode
-augroup("numbertoggle", { clear = true })
-autocmd({ "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" }, {
-  group = "numbertoggle",
-  pattern = "*",
-  callback = function()
-    if vim.o.nu and vim.api.nvim_get_mode().mode ~= "i" then
-      vim.opt.relativenumber = true
-    end
-  end,
-  desc = "Enable relative number in normal mode",
-})
-
-autocmd({ "BufLeave", "FocusLost", "InsertEnter", "CmdlineEnter", "WinLeave" }, {
-  group = "numbertoggle",
-  pattern = "*",
-  callback = function()
-    if vim.o.nu then
-      vim.opt.relativenumber = false
-    end
-  end,
-  desc = "Disable relative number in insert mode",
-})
+-- Keep relative line numbers always enabled
+-- (Removed the toggle between relative/absolute on insert mode)
 
 -- Go to last location when opening a buffer
 augroup("last_loc", { clear = true })
