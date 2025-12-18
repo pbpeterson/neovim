@@ -1,5 +1,8 @@
+-- Enhanced word motion with CamelCase and snake_case awareness
+-- Overrides default w, e, b motions for smarter navigation
 return {
   "chrisgrieser/nvim-spider",
+  lazy = true,
   opts = {},
   keys = {
     {

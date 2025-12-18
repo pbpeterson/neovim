@@ -1,3 +1,8 @@
+-- Completion Configuration (nvim-cmp)
+-- Autocomplete engine with LSP, buffer, and path sources
+-- Ghost text enabled for inline suggestions
+-- LuaSnip disabled in favor of nvim-snippets
+
 return {
   {
     "hrsh7th/nvim-cmp",
@@ -70,9 +75,9 @@ return {
           end,
         },
         experimental = {
-          ghost_text = vim.g.ai_cmp and {
+          ghost_text = {
             hl_group = "CmpGhostText",
-          } or false,
+          },
         },
         sorting = defaults.sorting,
       }

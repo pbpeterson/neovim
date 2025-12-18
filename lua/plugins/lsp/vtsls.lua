@@ -1,3 +1,8 @@
+-- VTsls (Visual Studio TypeScript Language Server) Configuration
+-- High-performance TypeScript/JavaScript language server
+-- Automatically excludes Deno projects and prioritizes tsconfig.json
+-- Features: Inlay hints, auto-imports, organize imports, code actions
+
 return {
   -- LSP Configuration
   {
@@ -75,58 +80,8 @@ return {
               },
             },
           },
-          keys = {
-            {
-              "gD",
-              function()
-                local params = vim.lsp.util.make_position_params()
-                LazyVim.lsp.execute({
-                  command = "typescript.goToSourceDefinition",
-                  arguments = { params.textDocument.uri, params.position },
-                  open = true,
-                })
-              end,
-              desc = "Goto Source Definition",
-            },
-            {
-              "gR",
-              function()
-                LazyVim.lsp.execute({
-                  command = "typescript.findAllFileReferences",
-                  arguments = { vim.uri_from_bufnr(0) },
-                  open = true,
-                })
-              end,
-              desc = "File References",
-            },
-            {
-              "<leader>co",
-              LazyVim.lsp.action["source.organizeImports"],
-              desc = "Organize Imports",
-            },
-            {
-              "<leader>cM",
-              LazyVim.lsp.action["source.addMissingImports.ts"],
-              desc = "Add missing imports",
-            },
-            {
-              "<leader>cu",
-              LazyVim.lsp.action["source.removeUnused.ts"],
-              desc = "Remove unused imports",
-            },
-            {
-              "<leader>cD",
-              LazyVim.lsp.action["source.fixAll.ts"],
-              desc = "Fix all diagnostics",
-            },
-            {
-              "<leader>cV",
-              function()
-                LazyVim.lsp.execute({ command = "typescript.selectTypeScriptVersion" })
-              end,
-              desc = "Select TS workspace version",
-            },
-          },
+          -- Use centralized keymaps from config/lsp-keymaps.lua
+          keys = require("config.lsp-keymaps").vtsls_specific,
         },
       },
       setup = {
@@ -237,14 +192,6 @@ return {
     },
   },
 
-  -- Mason Configuration
-  {
-    "williamboman/mason.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      table.insert(opts.ensure_installed, "js-debug-adapter")
-    end,
-  },
 
   -- File Icons
   {
@@ -264,76 +211,4 @@ return {
     },
   },
 
-  -- DAP Configuration
-  {
-    "mfussenegger/nvim-dap",
-    optional = true,
-    dependencies = {
-      {
-        "williamboman/mason.nvim",
-        opts = function(_, opts)
-          opts.ensure_installed = opts.ensure_installed or {}
-          table.insert(opts.ensure_installed, "js-debug-adapter")
-        end,
-      },
-    },
-    opts = function()
-      local dap = require("dap")
-      if not dap.adapters["pwa-node"] then
-        require("dap").adapters["pwa-node"] = {
-          type = "server",
-          host = "localhost",
-          port = "${port}",
-          executable = {
-            command = "node",
-            -- 💀 Make sure to update this path to point to your installation
-            args = {
-              LazyVim.get_pkg_path("js-debug-adapter", "/js-debug/src/dapDebugServer.js"),
-              "${port}",
-            },
-          },
-        }
-      end
-      if not dap.adapters["node"] then
-        dap.adapters["node"] = function(cb, config)
-          if config.type == "node" then
-            config.type = "pwa-node"
-          end
-          local nativeAdapter = dap.adapters["pwa-node"]
-          if type(nativeAdapter) == "function" then
-            nativeAdapter(cb, config)
-          else
-            cb(nativeAdapter)
-          end
-        end
-      end
-
-      local js_filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
-
-      local vscode = require("dap.ext.vscode")
-      vscode.type_to_filetypes["node"] = js_filetypes
-      vscode.type_to_filetypes["pwa-node"] = js_filetypes
-
-      for _, language in ipairs(js_filetypes) do
-        if not dap.configurations[language] then
-          dap.configurations[language] = {
-            {
-              type = "pwa-node",
-              request = "launch",
-              name = "Launch file",
-              program = "${file}",
-              cwd = "${workspaceFolder}",
-            },
-            {
-              type = "pwa-node",
-              request = "attach",
-              name = "Attach",
-              processId = require("dap.utils").pick_process,
-              cwd = "${workspaceFolder}",
-            },
-          }
-        end
-      end
-    end,
-  },
 }

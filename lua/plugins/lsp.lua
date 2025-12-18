@@ -1,3 +1,7 @@
+-- LSP Configuration
+-- Central configuration for Language Server Protocol
+-- Loads individual LSP configs from lua/plugins/lsp/ directory
+
 return {
   {
     "neovim/nvim-lspconfig",
@@ -20,6 +24,7 @@ return {
     },
   },
 
+  -- Mason package manager for LSP servers
   {
     "mason-org/mason.nvim",
     opts = {
@@ -30,6 +35,7 @@ return {
     },
   },
 
+  -- Conform formatter with Deno/Node.js auto-detection
   {
     "stevearc/conform.nvim",
     opts = {
@@ -69,11 +75,13 @@ return {
     },
   },
 
+  -- TailwindCSS color preview in completion menu
   {
     "roobert/tailwindcss-colorizer-cmp.nvim",
     opts = {},
   },
 
+  -- Add TailwindCSS colorizer to nvim-cmp
   {
     "hrsh7th/nvim-cmp",
     optional = true,

@@ -1,3 +1,7 @@
+-- TailwindCSS LSP Configuration
+-- Provides autocomplete and IntelliSense for TailwindCSS classes
+-- Includes support for Phoenix/Elixir .heex templates
+
 return {
   opts = {
     filetypes_exclude = { "markdown" },

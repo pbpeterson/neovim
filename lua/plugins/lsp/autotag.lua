@@ -1,7 +1,10 @@
+-- HTML/JSX Auto Tag
+-- Automatically closes and renames HTML/JSX tags
 return {
   {
     "windwp/nvim-ts-autotag",
-    event = "VeryLazy",
+    event = { "BufReadPre", "BufNewFile" },
+    ft = { "html", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte" },
     opts = {
       opts = {
         enable_close = true,

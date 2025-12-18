@@ -1,3 +1,8 @@
+-- Deno Language Server Configuration
+-- Provides TypeScript/JavaScript support for Deno runtime projects
+-- Activated only when deno.json or deno.jsonc is present
+-- Features: Inlay hints, auto-imports, dependency caching, code lens
+
 return {
   -- LSP Configuration
   {
@@ -53,61 +58,11 @@ return {
               },
             },
           },
-          keys = {
-            {
-              "gD",
-              function()
-                vim.lsp.buf.definition()
-              end,
-              desc = "Goto Definition",
-            },
-            {
-              "gR",
-              function()
-                vim.lsp.buf.references()
-              end,
-              desc = "References",
-            },
-            {
-              "<leader>co",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.organizeImports" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Organize Imports",
-            },
-            {
-              "<leader>cD",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.fixAll" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Fix all diagnostics",
-            },
-            {
-              "<leader>dc",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.cache" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Cache Dependencies",
-            },
-          },
+          -- Use centralized keymaps from config/lsp-keymaps.lua
+          keys = vim.list_extend(
+            vim.deepcopy(require("config.lsp-keymaps").typescript_common),
+            require("config.lsp-keymaps").deno_specific
+          ),
         },
       },
       setup = {
@@ -132,14 +87,6 @@ return {
     },
   },
 
-  -- Mason Configuration
-  {
-    "williamboman/mason.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      table.insert(opts.ensure_installed, "deno")
-    end,
-  },
 
   -- File Icons
   {
@@ -153,48 +100,4 @@ return {
     },
   },
 
-  -- DAP Configuration for Deno
-  {
-    "mfussenegger/nvim-dap",
-    optional = true,
-    opts = function()
-      local dap = require("dap")
-
-      if not dap.adapters["deno"] then
-        dap.adapters["deno"] = {
-          type = "executable",
-          command = "deno",
-          args = { "run", "--inspect-wait", "--allow-all" },
-        }
-      end
-
-      local deno_filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
-
-      for _, language in ipairs(deno_filetypes) do
-        -- Only add deno configurations if in a deno project
-        if not dap.configurations[language] then
-          dap.configurations[language] = {}
-        end
-
-        table.insert(dap.configurations[language], {
-          type = "deno",
-          request = "launch",
-          name = "Launch Deno",
-          program = "${file}",
-          cwd = "${workspaceFolder}",
-          runtimeExecutable = "deno",
-          runtimeArgs = { "run", "--inspect-wait", "--allow-all" },
-          attachSimplePort = 9229,
-        })
-
-        table.insert(dap.configurations[language], {
-          type = "deno",
-          request = "attach",
-          name = "Attach Deno",
-          cwd = "${workspaceFolder}",
-          attachSimplePort = 9229,
-        })
-      end
-    end,
-  },
 }
