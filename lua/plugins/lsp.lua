@@ -87,6 +87,21 @@ return {
         -- Use prettierd (daemon version) for faster prettier formatting
         prettier = {
           command = "prettierd",
+          -- Ensure prettierd restarts when switching projects
+          cwd = require("conform.util").root_file({
+            ".prettierrc",
+            ".prettierrc.json",
+            ".prettierrc.yml",
+            ".prettierrc.yaml",
+            ".prettierrc.json5",
+            ".prettierrc.js",
+            ".prettierrc.cjs",
+            ".prettierrc.mjs",
+            "prettier.config.js",
+            "prettier.config.cjs",
+            "prettier.config.mjs",
+            "package.json",
+          }),
         },
         deno_fmt = {
           command = "deno",
