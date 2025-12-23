@@ -56,15 +56,15 @@ autocmd("FileType", {
 })
 
 -- Auto-format on save for specific filetypes
--- Only enable for filetypes you want to auto-format
+-- Uses conform.nvim for better performance (prettierd, etc.)
 augroup("auto_format", { clear = true })
 autocmd("BufWritePre", {
   group = "auto_format",
-  pattern = { "*.ts", "*.tsx", "*.js", "*.jsx", "*.lua", "*.json" },
-  callback = function()
-    vim.lsp.buf.format({ async = false })
+  pattern = { "*.ts", "*.tsx", "*.js", "*.jsx", "*.lua", "*.json", "*.css", "*.scss", "*.html", "*.md" },
+  callback = function(args)
+    require("conform").format({ bufnr = args.buf, lsp_fallback = true })
   end,
-  desc = "Auto-format before saving",
+  desc = "Auto-format before saving with conform.nvim",
 })
 
 -- Check if we need to reload the file when it changed
