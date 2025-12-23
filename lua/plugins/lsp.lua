@@ -11,6 +11,8 @@ return {
     },
     opts = {
       servers = {
+        -- Disable eslint LSP since we're using eslint_d
+        eslint = false,
         tailwindcss = require("plugins.lsp.tailwindcss").opts,
         autotag = require("plugins.lsp.autotag").opts,
         denols = require("plugins.lsp.denols").opts,
@@ -29,8 +31,14 @@ return {
     "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
+        -- LSP servers
         "tailwindcss-language-server",
         "emmet-ls",
+        -- Formatters (daemon versions for better performance)
+        "prettierd",
+        "stylua", -- Lua formatter
+        -- Linters (daemon versions for better performance)
+        "eslint_d",
       },
     },
   },
@@ -64,8 +72,22 @@ return {
           end
           return { "prettier" }
         end,
+        lua = { "stylua" },
+        json = { "prettier" },
+        jsonc = { "prettier" },
+        yaml = { "prettier" },
+        markdown = { "prettier" },
+        html = { "prettier" },
+        css = { "prettier" },
+        scss = { "prettier" },
+        svelte = { "prettier" },
+        vue = { "prettier" },
       },
       formatters = {
+        -- Use prettierd (daemon version) for faster prettier formatting
+        prettier = {
+          command = "prettierd",
+        },
         deno_fmt = {
           command = "deno",
           args = { "fmt", "-" },

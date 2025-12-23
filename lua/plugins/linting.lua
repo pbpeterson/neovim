@@ -9,6 +9,12 @@ return {
       -- Linters by filetype
       linters_by_ft = {
         markdown = {}, -- Disable markdownlint warnings
+        javascript = { "eslint_d" },
+        javascriptreact = { "eslint_d" },
+        typescript = { "eslint_d" },
+        typescriptreact = { "eslint_d" },
+        svelte = { "eslint_d" },
+        vue = { "eslint_d" },
       },
       linters = {
         -- Configure markdownlint to ignore line length
@@ -20,37 +26,20 @@ return {
             "--",
           },
         },
+        -- eslint_d for faster linting (daemon version of eslint)
+        eslint_d = {
+          args = {
+            "--no-warn-ignored",
+            "--format",
+            "json",
+            "--stdin",
+            "--stdin-filename",
+            function()
+              return vim.api.nvim_buf_get_name(0)
+            end,
+          },
+        },
       },
     },
-  },
-
-  -- Configure ESLint to ignore .env files
-  {
-    "neovim/nvim-lspconfig",
-    opts = function(_, opts)
-      -- Ensure opts.servers exists
-      opts.servers = opts.servers or {}
-
-      -- Configure ESLint
-      if not opts.servers.eslint then
-        opts.servers.eslint = {}
-      end
-
-      opts.servers.eslint.settings = vim.tbl_deep_extend("force", opts.servers.eslint.settings or {}, {
-        -- Disable ESLint for .env files
-        workingDirectories = { mode = "auto" },
-      })
-
-      -- Add autocommand to disable diagnostics for .env files
-      vim.api.nvim_create_autocmd("BufRead", {
-        pattern = { "*.env", ".env*" },
-        callback = function()
-          vim.diagnostic.disable(0)
-        end,
-        desc = "Disable diagnostics for .env files",
-      })
-
-      return opts
-    end,
   },
 }
